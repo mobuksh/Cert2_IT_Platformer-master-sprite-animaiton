@@ -80,6 +80,19 @@ function initialise()
 initialise();
 var player = new Player();
 var keyboard = new Keyboard();
+var music = new Howl(
+	{
+		urls:["background.ogg"],
+		loop: true,
+		buffer: true,
+		volume: 0.5
+	}
+);
+//UNCOMMENT FOR MUSIC TO BE TURNED ON
+// needs a MUTE button
+music.play();
+var cam_x = 0;
+var cam_y = 0;
 
 function run()
 {
@@ -89,10 +102,13 @@ function run()
 	var deltaTime = getDeltaTime();
 	
 	player.update(deltaTime);
-	
-	
-	drawMap();
-	player.draw();
+
+	cam_x = (player.x - canvas.width/2, 0, MAP.tw * TILE);
+	cam_y = (player.y - canvas.height/2, 0, canvas.width);
+
+
+	drawMap(cam_x, cam_y);
+	player.draw(cam_x,cam_y);
 		
 		// update the frame counter 
 	fpsTime += deltaTime;
@@ -104,10 +120,10 @@ function run()
 		fpsCount = 0;
 	}		
 		
-	// draw the FPS
-	context.fillStyle = "#f00";
-	context.font="14px Arial";
-	context.fillText("FPS: " + fps, 5, 20, 100);
+	//// draw the FPS
+	//context.fillStyle = "#f00";
+	//context.font="14px Arial";
+	//context.fillText("FPS: " + fps, 5, 20, 100);
 }
 
 

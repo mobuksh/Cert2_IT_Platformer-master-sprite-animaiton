@@ -59,7 +59,27 @@ var Player = function() {
 	
 	this.falling = true;
 	this.jumping = false;
-	
+	this.lives = 3;
+	this.lives_image = document.createElement("img");
+	this.lives_image.src = "hero.png";
+    this.start_x = this.x;
+    this.start_y = this.y;
+    ////////////////////////////////////
+    var self = this;
+    this.jump_sfx_isPlaying = false;
+	this.jump_sfx = new Howl (
+        {
+            urls:["fireEffect.ogg"],
+            buffer: true,
+            volume: 1,
+            isPlaying : false,
+            self: this,
+            onend: function()
+            {
+              self.jump_sfx_isPlaying = false;
+            }
+        }
+    )
 }
 
 Player.prototype.update = function(deltaTime)
@@ -123,6 +143,12 @@ Player.prototype.update = function(deltaTime)
         if (left == true) this.sprite.setAnimation(ANIM_JUMP_LEFT);
 
         if (right == true) this.sprite.setAnimation(ANIM_JUMP_RIGHT);
+
+        if (!this.jumping)
+        {
+            this.jump_sfx.play();
+            this.jump_sfx_isPlaying = true;
+        }
 	}
 
 	var wasleft = (this.velocity_x < 0);
@@ -219,11 +245,25 @@ Player.prototype.update = function(deltaTime)
 			this.velocity_x = 0;
 		}
 	}
+    if(this.y > canvas.height + 300)
+    {
+        this.lives--;
+        this.x = this.start_x;
+        this.y = this.start_y;
+    }
 }
 
-Player.prototype.draw = function()
+Player.prototype.draw = function(cam_x, cam_y)
 {
     this.sprite.draw(context, this.x,this.y);
+    for (var i=0; i < this.lives; i++) {
+        context.save();
+            context.translate(50+(5 + this.lives_image.width) * i, 0);
+            context.drawImage(this.lives_image, -this.lives_image.width / 4, this.lives_image.height/4, this.lives_image.width/4, this.lives_image.height/4);
+        context.restore();
+
+    }
+
 
     //context.save();
 	//	context.translate(this.x, this.y);
